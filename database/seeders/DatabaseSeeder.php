@@ -12,12 +12,11 @@ class DatabaseSeeder extends Seeder
      * Seed the application's database.
      */
     public function run(): void
-    {
-        // User::factory(10)->create();
+{
+    \App\Models\Role::create(['name' => 'admin', 'description' => 'Administrador']);
+    \App\Models\Role::create(['name' => 'empleado', 'description' => 'Empleado de almacén']);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
-    }
+    \App\Models\TransactionType::create(['name' => 'entrada']);
+    \App\Models\TransactionType::create(['name' => 'salida']);
+}
 }
