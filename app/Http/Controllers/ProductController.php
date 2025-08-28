@@ -9,7 +9,11 @@ class ProductController extends Controller
 {
 public function index()
 {
-    $products = Product::included()->filter()->get();
+    $products = Product::included()
+        ->filter()
+        ->sort()
+        ->paginateData();
+
     return response()->json($products);
 }
 

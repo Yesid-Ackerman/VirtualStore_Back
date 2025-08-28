@@ -10,11 +10,32 @@ use Laravel\Sanctum\HasApiTokens;
 
 class Product extends Model
 {
-   protected $fillable = [
-        'name', 'category_id', 'brand', 'model', 'sku',
-        'price_buy', 'price_sell', 'stock', 'status', 'avatar'
+    protected $fillable = [
+        'name',
+        'category_id',
+        'brand',
+        'model',
+        'sku',
+        'price_buy',
+        'price_sell',
+        'stock',
+        'status',
+        'avatar'
     ];
-
+    protected $allowSort = [
+        'id',
+        'name',
+        'brand',
+        'model',
+        'sku',
+        'price_buy',
+        'price_sell',
+        'stock',
+        'status',
+        'category_id',
+        'created_at',
+        'updated_at'
+    ];
     protected $allowIncluded = ['category'];
     protected $allowFilter = ['name', 'brand', 'model', 'sku'];
 
@@ -55,5 +76,35 @@ class Product extends Model
                 $query->where($filter, 'LIKE', "%{$value}%");
             }
         }
+    }
+
+    public function scopeSort(Builder $query)
+    {
+        $sort = request('sort');
+        $allowed = collect($query->getModel()->allowSort ?? []);
+
+        if (!$sort || $allowed->isEmpty()) {
+            return $query; // sin orden si no hay campos permitidos o no se mandó sort
+        }
+
+        foreach (explode(',', $sort) as $field) {
+            $direction = 'asc';
+
+            if (str_starts_with($field, '-')) {
+                $direction = 'desc';
+                $field = ltrim($field, '-');
+            }
+
+            if ($allowed->contains($field)) {
+                $query->orderBy($field, $direction);
+            }
+        }
+
+        return $query;
+    }
+    public function scopePaginateData($query)
+    {
+        $perPage = intval(request('per_page')) ?: 1; // default = 10
+        return $query->paginate($perPage);
     }
 }
