@@ -32,7 +32,7 @@ class UserSeeder extends Seeder
             'name' => 'Vendedor Prueba',
             'email' => 'vendedor@store.com',
             'password' => Hash::make('password'),
-            'role_id' => 2
+            'role_id' => 3
         ]);
     }
 }

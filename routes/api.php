@@ -6,35 +6,55 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 
-// ----------------- AUTENTICACIÓN -----------------
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+*/
+
+// Auth
 Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [AuthController::class, 'register']);
 Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
-// ----------------- CRUD USUARIOS (solo ADMIN) -----------------
+// ---------------- ADMIN ONLY (usuarios y roles) ----------------
 Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
-    Route::apiResource('users', UserController::class);
+    // Users
+    Route::get('users', [UserController::class, 'index']);
+    Route::get('users/{user}', [UserController::class, 'show']);
+    Route::post('users', [UserController::class, 'store']);
+    Route::put('users/{user}', [UserController::class, 'update']);
+    Route::delete('users/{user}', [UserController::class, 'destroy']);
+
+    // Roles
+    Route::get('roles', [RoleController::class, 'index']);
+    Route::get('roles/{role}', [RoleController::class, 'show']);
+    Route::post('roles', [RoleController::class, 'store']);
+    Route::put('roles/{role}', [RoleController::class, 'update']);
+    Route::delete('roles/{role}', [RoleController::class, 'destroy']);
 });
 
-// ----------------- CRUD ROLES (solo ADMIN) -----------------
-Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
-    Route::apiResource('roles', RoleController::class);
-});
-
-// ----------------- CRUD CATEGORÍAS (ADMIN, MANAGER) -----------------
+// --------------- ADMIN & MANAGER (crear/editar/eliminar categorías y productos) ---------------
 Route::middleware(['auth:sanctum', 'role:admin,manager'])->group(function () {
-    Route::apiResource('categories', CategoryController::class);
-});
+    // Categories - write
+    Route::post('categories', [CategoryController::class, 'store']);
+    Route::put('categories/{category}', [CategoryController::class, 'update']);
+    Route::delete('categories/{category}', [CategoryController::class, 'destroy']);
 
-// ----------------- CRUD PRODUCTOS -----------------
-Route::middleware(['auth:sanctum', 'role:admin,manager'])->group(function () {
+    // Products - write
     Route::post('products', [ProductController::class, 'store']);
     Route::put('products/{product}', [ProductController::class, 'update']);
     Route::delete('products/{product}', [ProductController::class, 'destroy']);
 });
 
-// ✅ VISUALIZAR PRODUCTOS (todos los roles autenticados)
-Route::middleware(['auth:sanctum'])->group(function () {
+// --------------- READ-ONLY (ADMIN, MANAGER, VENDEDOR) ---------------
+Route::middleware(['auth:sanctum', 'role:admin,manager,vendedor'])->group(function () {
+    // Categories - read
+    Route::get('categories', [CategoryController::class, 'index']);
+    Route::get('categories/{category}', [CategoryController::class, 'show']);
+
+    // Products - read
     Route::get('products', [ProductController::class, 'index']);
     Route::get('products/{product}', [ProductController::class, 'show']);
 });
+
