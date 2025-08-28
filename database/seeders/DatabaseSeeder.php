@@ -12,11 +12,12 @@ class DatabaseSeeder extends Seeder
      * Seed the application's database.
      */
     public function run(): void
-{
-    \App\Models\Role::create(['name' => 'admin', 'description' => 'Administrador']);
-    \App\Models\Role::create(['name' => 'empleado', 'description' => 'Empleado de almacén']);
-
-    \App\Models\TransactionType::create(['name' => 'entrada']);
-    \App\Models\TransactionType::create(['name' => 'salida']);
-}
+    {
+        $this->call([
+            RoleSeeder::class,
+            UserSeeder::class,
+            CategorySeeder::class,
+            ProductSeeder::class,
+        ]);
+    }
 }
