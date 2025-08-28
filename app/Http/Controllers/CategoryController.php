@@ -8,10 +8,11 @@ use Illuminate\Http\Request;
 class CategoryController extends Controller
 
    {
-    public function index()
-    {
-        return response()->json(Category::all(), 200);
-    }
+ public function index()
+{
+    $categories = Category::included()->filter()->get();
+    return response()->json($categories);
+}
 
     public function store(Request $request)
     {

@@ -7,10 +7,11 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    public function index()
-    {
-        return Product::with('category')->get();
-    }
+public function index()
+{
+    $products = Product::included()->filter()->get();
+    return response()->json($products);
+}
 
     public function store(Request $request)
     {
