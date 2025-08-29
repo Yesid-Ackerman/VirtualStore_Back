@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Log;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -17,39 +18,55 @@ public function index()
     return response()->json($products);
 }
 
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string',
-            'category_id' => 'required|exists:categories,id',
-            'sku' => 'required|unique:products',
-            'price_buy' => 'required|numeric',
-            'price_sell' => 'required|numeric',
-            'stock' => 'required|integer'
-        ]);
+public function store(Request $request)
+{
+    $product = Product::create($request->all());
 
-        return Product::create($validated);
-    }
+    Log::create([
+        'user_id' => auth()->id(),
+        'action' => 'create',
+        'entity_type' => 'Product',
+        'entity_id' => $product->id,
+        'changes' => json_encode($product->toArray())
+    ]);
 
-    public function show($id)
-    {
-        return Product::with('category')->findOrFail($id);
-    }
+    return response()->json($product, 201);
+}
 
-    public function update(Request $request, $id)
-    {
-        $product = Product::findOrFail($id);
+public function update(Request $request, $id)
+{
+    $product = Product::findOrFail($id);
+    $original = $product->toArray();
+    $product->update($request->all());
 
-        $product->update($request->all());
+    Log::create([
+        'user_id' => auth()->id(),
+        'action' => 'update',
+        'entity_type' => 'Product',
+        'entity_id' => $product->id,
+        'changes' => json_encode([
+            'before' => $original,
+            'after' => $product->toArray()
+        ])
+    ]);
 
-        return $product;
-    }
+    return response()->json($product);
+}
 
-    public function destroy($id)
-    {
-        $product = Product::findOrFail($id);
-        $product->delete();
+public function destroy($id)
+{
+    $product = Product::findOrFail($id);
+    $data = $product->toArray();
+    $product->delete();
 
-        return response()->json(['message' => 'Producto eliminado']);
-    }
+    Log::create([
+        'user_id' => auth()->id(),
+        'action' => 'delete',
+        'entity_type' => 'Product',
+        'entity_id' => $id,
+        'changes' => json_encode($data)
+    ]);
+
+    return response()->json(['message' => 'Producto eliminado']);
+}
 }

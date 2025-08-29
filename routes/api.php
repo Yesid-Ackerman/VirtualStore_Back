@@ -5,6 +5,8 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\SaleController;
+use App\Http\Controllers\StockEntryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,3 +60,14 @@ Route::middleware(['auth:sanctum', 'role:admin,manager,vendedor'])->group(functi
     Route::get('products/{product}', [ProductController::class, 'show']);
 });
 
+Route::middleware(['auth:sanctum', 'role:admin,manager,vendedor'])->group(function () {
+    Route::post('sales', [SaleController::class, 'store']);   // Registrar venta
+    Route::get('sales', [SaleController::class, 'index']);   // Listar ventas
+    Route::get('sales/{sale}', [SaleController::class, 'show']); // Detalle de venta
+});
+
+Route::middleware('auth:sanctum')->post('stock-entry', [StockEntryController::class, 'store']);
+
+Route::middleware('auth:sanctum')->get('logs', function() {
+    return \App\Models\Log::with('user')->orderBy('created_at','desc')->paginate(20);
+});

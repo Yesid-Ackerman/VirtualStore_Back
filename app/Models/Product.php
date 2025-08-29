@@ -43,7 +43,10 @@ class Product extends Model
     {
         return $this->belongsTo(Category::class);
     }
-
+    public function saleItems()
+    {
+        return $this->hasMany(SaleItem::class);
+    }
     /* SCOPES */
     public function scopeIncluded(Builder $query)
     {
