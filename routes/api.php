@@ -71,3 +71,4 @@ Route::middleware('auth:sanctum')->post('stock-entry', [StockEntryController::cl
 Route::middleware('auth:sanctum')->get('logs', function() {
     return \App\Models\Log::with('user')->orderBy('created_at','desc')->paginate(20);
 });
+Route::get('/history', [SaleController::class, 'history']);

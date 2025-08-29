@@ -37,6 +37,9 @@ class ProductObserver
     }
     public function deleted(Product $product)
     {
+           if ($product instanceof Product) {
+        return; // 🚫 No registrar logs para productos aquí
+    }
         Log::create([
             'user_id'     => auth()->id(),
             'action'      => 'deleted',

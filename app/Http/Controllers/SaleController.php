@@ -79,10 +79,32 @@ class SaleController extends Controller
                 'message' => 'Venta registrada exitosamente',
                 'sale' => $sale->load('items')
             ], 201);
-
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
+public function history()
+{
+    $sales = Sale::with(['user', 'items.product'])->get();
+
+    $historial = [];
+
+    foreach ($sales as $sale) {
+        foreach ($sale->items as $item) {
+            $historial[] = [
+                'id'             => $sale->id,
+                'hora'           => $sale->created_at->format('Y-m-d H:i:s'),
+                'usuario'        => $sale->user->name,
+                'producto'       => $item->product->name,
+                'cantidad'       => $item->quantity,
+                'precio_venta'   => $item->price_sell,
+                'metodo_pago'    => $sale->payment_method,
+            ];
+        }
+    }
+
+    return response()->json($historial);
+}
 }

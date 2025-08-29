@@ -8,6 +8,7 @@ use App\Models\Sale;
 use App\Models\User;
 use App\Observers\ModelObserver;
 use App\Observers\ProductObserver;
+use App\Observers\SaleObserver;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -26,5 +27,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Product::observe(ProductObserver::class);;
+        Sale::observe(SaleObserver::class);
     }
 }
