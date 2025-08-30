@@ -107,7 +107,7 @@ class Product extends Model
     }
     public function scopePaginateData($query)
     {
-        $perPage = intval(request('per_page')) ?: 1; // default = 10
+        $perPage = intval(request('per_page')) ?: 10; // default = 10
         return $query->paginate($perPage);
     }
 }
