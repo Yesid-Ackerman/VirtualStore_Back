@@ -37,16 +37,18 @@ Route::middleware(['auth:sanctum', 'role:admin,manager'])->group(function () {
     Route::post('products', [ProductController::class, 'store']);
     Route::put('products/{product}', [ProductController::class, 'update']);
     Route::delete('products/{product}', [ProductController::class, 'destroy']);
+
+    // ---------- STOCK ENTRY ----------
+Route::middleware('auth:sanctum')->post('stock-entry', [StockEntryController::class, 'store']);
+Route::get('/sales', [SaleController::class, 'index']);
 });
 
 // ---------- SALES ----------
 Route::middleware(['auth:sanctum', 'role:admin,manager,vendedor'])->group(function () {
     Route::post('sales', [SaleController::class, 'store']);        // Registrar venta
-    Route::get('sales', [SaleController::class, 'index']);         // Historial de ventas
+    // Route::get('sales', [SaleController::class, 'index']);         // Historial de ventas
     Route::get('sales/{sale}', [SaleController::class, 'show']);   // Detalle de una venta
     Route::get('sales-summary', [SaleController::class, 'dailySummary']);  // Resumen diario
 });
 
 
-// ---------- STOCK ENTRY ----------
-Route::middleware('auth:sanctum')->post('stock-entry', [StockEntryController::class, 'store']);
